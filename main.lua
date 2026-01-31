@@ -21,7 +21,7 @@ function love.load()
     world:addCollisionClass("blockup")
     world:addCollisionClass("blockdown")
      world:addCollisionClass("paddle")
-       world:addCollisionClass("Destroyer", {ignores = {"ball","paddleBorder","walltop","wallsideA","wallsideB","setter","paddle"}})
+       world:addCollisionClass("destroyer", {ignores = {"ball","paddleBorder","walltop","wallsideA","wallsideB","setter","paddle"}})
 
 love.graphics.setDefaultFilter("nearest", "nearest") 
  
@@ -195,7 +195,7 @@ music.one:play()
 
   if destroyer.created == 0 and love.keyboard.isDown("escape") then
  destroyer.hitbox = world:newRectangleCollider(1000, 1000,800,600)
-  destroyer.hitbox:setCollisionClass("Destroyer")
+  destroyer.hitbox:setCollisionClass("destroyer")
   destroyer.hitbox:setFixedRotation(true)
 destroyer.created = 1
 end
