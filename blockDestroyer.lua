@@ -27,7 +27,7 @@ for i = 1, blockTotal do
             blockDestroyed = blockDestroyed + 1
         end
 
-        if up:enter("Destroyer") or down:enter("Destroyer") then
+        if up:enter("destroyer") or down:enter("destroyer") then
                         up:destroy()
             down:destroy()
             
