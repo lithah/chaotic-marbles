@@ -6,6 +6,7 @@
     UI = require "menuScript"
     UIdraw = require "menuDraw"
     blockcolocator = require "drawingLvl"
+    bufflogic = require "powerup"
 
       math.randomseed(os.time())
 --EL PROBLEMA ES QUE CAMBIASTE LA FOTO DE CONFIG; DEBERIAS HABER PUESTO OTRA COMO CONFIG Y ESA COMO bgconfig
@@ -16,12 +17,13 @@ function love.load()
     world:addCollisionClass("button", {ignores = {"ball"}})
     world:addCollisionClass("setter", {ignores = {"ball"}})
     world:addCollisionClass("walltop")
-        world:addCollisionClass("wallsideA")
+    world:addCollisionClass("wallsideA")
     world:addCollisionClass("wallsideB")
     world:addCollisionClass("blockup")
     world:addCollisionClass("blockdown")
-     world:addCollisionClass("paddle")
-       world:addCollisionClass("destroyer", {ignores = {"ball","paddle"}})
+    world:addCollisionClass("paddle")
+    world:addCollisionClass("destroyer", {ignores = {"ball","paddle"}})
+    world:addCollisionClass("powerup", {ignores = {"ball","blockup","blockdown"}})
 
 love.graphics.setDefaultFilter("nearest", "nearest") 
  
@@ -105,6 +107,8 @@ sfx.paddlehit = love.audio.newSource('sounds/paddleHit.mp3', "static")
 sfx.click = love.audio.newSource('sounds/click.wav', "static")
 sfx.win = love.audio.newSource('sounds/levelWon.wav', "static")
 
+powerups = {}
+powerups.chance = 0
 
 speed = {}
 speed = 100
@@ -155,10 +159,16 @@ ctu = .002 -- Creator tools unlock; prevents spamming of the key; a workaround u
 msd = .002 -- Music and Sound Definer; prevents spamming of the key; a workaround used all round this 
 --game because i haven't figured another way to do it lol.
 mim = false --Music is muted
-
+powerups.value = 0
+powerups.counter = 0
+powerups.exist = false
 end
 
 function love.update(dt)
+
+  
+  print(powerups.value)
+bufflogic.PowerUpLogic()
 
   if love.keyboard.isDown("m") and msd >= 0 and mim == true then
   sfx.select:setVolume(0)
@@ -284,6 +294,11 @@ paddle.hitbox1:setFixedRotation(true)
 paddle.hitbox2:setFixedRotation(true)
 paddle.hitbox3:setFixedRotation(true)
 
+paddle.powerup = world:newRectangleCollider(0,0, 80,20)
+paddle.powerup:setType("kinematic")
+paddle.powerup:setCollisionClass("paddle")
+paddle.powerup:setFixedRotation(true)
+
 paddle.generated = 1
 end
 if clicked == false and setter.isDone == false then
@@ -378,6 +393,7 @@ if border.hitboxdown:enter("ball") then
   clicked = false
   igclicked = 0
     end
+
 
     if lives == 0 then --death script ---------------------------------------------------------------
          menu.screen = 2

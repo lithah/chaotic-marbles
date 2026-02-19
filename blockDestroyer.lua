@@ -19,14 +19,16 @@ for i = 1, blockTotal do
 
     if up and down and _G[existKey] == true then
         if up:enter("ball") or down:enter("ball") then
+            powerups.posX, powerups.posY = up:getPosition()
             up:destroy()
             down:destroy()
-            
+            powerups.chance = math.random(1,3)
+            powerups.value = powerups.value + powerups.chance
+
             _G[existKey] = false 
             score = score + 100
             blockDestroyed = blockDestroyed + 1
         end
-
         if up:enter("destroyer") or down:enter("destroyer") then
                         up:destroy()
             down:destroy()
@@ -34,7 +36,7 @@ for i = 1, blockTotal do
             _G[existKey] = false 
         end
     end
-    
+
 end
  
 end
