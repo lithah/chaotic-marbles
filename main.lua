@@ -9,7 +9,7 @@
     bufflogic = require "powerup"
 
       math.randomseed(os.time())
---EL PROBLEMA ES QUE CAMBIASTE LA FOTO DE CONFIG; DEBERIAS HABER PUESTO OTRA COMO CONFIG Y ESA COMO bgconfig
+
 function love.load()
       world = wf.newWorld(100,100, true)
     world:addCollisionClass("ball")
@@ -23,7 +23,7 @@ function love.load()
     world:addCollisionClass("blockdown")
     world:addCollisionClass("paddle")
     world:addCollisionClass("destroyer", {ignores = {"ball","paddle"}})
-    world:addCollisionClass("powerup", {ignores = {"ball","blockup","blockdown"}})
+    world:addCollisionClass("powerups", {ignores = {"ball"}})
 
 love.graphics.setDefaultFilter("nearest", "nearest") 
  
@@ -98,6 +98,7 @@ block.created = false
 paddle = {}
 paddle.generated = 0
  paddle.sprite = love.graphics.newImage('images/paddle.png')
+ paddle.enlargeSprite = love.graphics.newImage('images/enlarge.png')
 
 
 sfx = {}
@@ -106,6 +107,9 @@ sfx.dead = love.audio.newSource('sounds/dead.wav', "static")
 sfx.paddlehit = love.audio.newSource('sounds/paddleHit.mp3', "static")
 sfx.click = love.audio.newSource('sounds/click.wav', "static")
 sfx.win = love.audio.newSource('sounds/levelWon.wav', "static")
+sfx.melt = love.audio.newSource('sounds/melt.wav', "static")
+sfx.expand = love.audio.newSource('sounds/expand.wav', "static")
+sfx.contract = love.audio.newSource('sounds/contract.wav', "static")
 
 powerups = {}
 powerups.chance = 0
@@ -162,12 +166,54 @@ mim = false --Music is muted
 powerups.value = 0
 powerups.counter = 0
 powerups.exist = false
+powerups.selection = 0
+powerups.sprite = love.graphics.newImage('images/powerups.png')
+powerups.melt = false
+powerups.enlarge = false
+pwm = 3 -- powerup Melt's duration
+pwe = 10 -- powerup Enlarge's duration
 end
 
-function love.update(dt)
 
+
+
+
+
+function love.update(dt) ----------------------------------------------------------------------------
+print(pwe)
+if paddle.moveable == "keyboard" and paddle.hitbox2 and menu.screen == 3 then
+pddtPosX,pddtPosY = paddle.hitbox2:getPosition()
+love.mouse.setPosition(pddtPosX,pddtPosY)
+end
+
+if powerups.melt == true then
+pwm = pwm - dt
+end
+if pwm <= 0 then
+  pwm = 0
+  powerups.melt = false
+  powerups.selection = 0
+    pwm = 3
+end
+
+
+if powerups.enlarge == true and pwe == 5 then
+  sfx.expand:play()
+end
+if powerups.enlarge == true then
+pwe = pwe - dt
+end
+if pwe <= 0 then
+  sfx.contract:play()
+  paddle.generated = 0
+  pwe = 0
+  powerups.enlarge = false
+  powerups.selection = 0
+    pwe = 10
+    
+end
   
-  print(powerups.value)
+
 bufflogic.PowerUpLogic()
 
   if love.keyboard.isDown("m") and msd >= 0 and mim == true then
@@ -277,10 +323,44 @@ block.sprite = love.graphics.newImage('images/block4.png')
 end
 if menu.screen == 3 then
 
-if paddle.generated == 0 then
-paddle.hitbox1 = world:newRectangleCollider(0,0, 20,20)
-paddle.hitbox2 = world:newRectangleCollider(0,0, 40,20)
-paddle.hitbox3 = world:newRectangleCollider(0,0, 20,20)
+if paddle.generated == 0 and powerups.enlarge == false then
+    if paddle.hitbox1 then
+    paddle.hitbox1:destroy()
+paddle.hitbox2:destroy()
+paddle.hitbox3:destroy()
+  end
+
+paddle.hitbox1 = world:newRectangleCollider(mPosX-30,410+60, 20,20)
+paddle.hitbox2 = world:newRectangleCollider(mPosX,410+60, 40,20)
+paddle.hitbox3 = world:newRectangleCollider(mPosX+30,410+60, 20,20)
+
+  paddle.hitbox1:setType("kinematic")
+paddle.hitbox2:setType("kinematic")
+paddle.hitbox3:setType("kinematic")
+
+  paddle.hitbox1:setCollisionClass("paddle")
+paddle.hitbox2:setCollisionClass("paddle")
+paddle.hitbox3:setCollisionClass("paddle")
+
+paddle.hitbox1:setFixedRotation(true)
+paddle.hitbox2:setFixedRotation(true)
+paddle.hitbox3:setFixedRotation(true)
+    if paddle.moveable == "keyboard" then
+    pdp = false
+  end
+
+paddle.generated = 1
+end
+if paddle.generated == 0 and powerups.enlarge == true then
+    if paddle.hitbox1 then
+    paddle.hitbox1:destroy()
+paddle.hitbox2:destroy()
+paddle.hitbox3:destroy()
+  end
+
+paddle.hitbox1 = world:newRectangleCollider(mPosX-30,410+60, 40,20)
+paddle.hitbox2 = world:newRectangleCollider(mPosX,410+60, 60,20)
+paddle.hitbox3 = world:newRectangleCollider(mPosX+30,410+60, 40,20)
 
   paddle.hitbox1:setType("kinematic")
 paddle.hitbox2:setType("kinematic")
@@ -294,10 +374,9 @@ paddle.hitbox1:setFixedRotation(true)
 paddle.hitbox2:setFixedRotation(true)
 paddle.hitbox3:setFixedRotation(true)
 
-paddle.powerup = world:newRectangleCollider(0,0, 80,20)
-paddle.powerup:setType("kinematic")
-paddle.powerup:setCollisionClass("paddle")
-paddle.powerup:setFixedRotation(true)
+    if paddle.moveable == "keyboard" then
+    pdp = false
+  end
 
 paddle.generated = 1
 end
@@ -322,6 +401,7 @@ if isPaused == false then
 paddle.hitbox1:setPosition(mPosX-30,410+60)
 paddle.hitbox2:setPosition(mPosX,410+60)
 paddle.hitbox3:setPosition(mPosX+30,410+60)
+
   end
  if paddle.moveable == "keyboard" then
   if pdp == false then
@@ -345,8 +425,8 @@ setter.hitbox:setLinearVelocity(400,0)
 
 end
 if not love.keyboard.isDown("a") and not love.keyboard.isDown("d") or love.keyboard.isDown("a") and love.keyboard.isDown("d") then
-  paddle.hitbox1:setLinearVelocity(0,0)
-  paddle.hitbox2:setLinearVelocity(0,0)
+paddle.hitbox1:setLinearVelocity(0,0)
+paddle.hitbox2:setLinearVelocity(0,0)
 paddle.hitbox3:setLinearVelocity(0,0)
 setter.hitbox:setLinearVelocity(0,0)
 end
@@ -369,6 +449,10 @@ end
 
 
 end
+    if setter.hitbox:exit("powerups") then
+print("poggers")
+  end
+
   if paddle.moveable == "mouse" then
 setter.hitbox:setPosition(mPosX,460)
   end
@@ -469,7 +553,7 @@ end
 
 
 end
-function love.draw()
+function love.draw() -------------------------------------------------------------------------------
   
   UIdraw.menuDraw()   
   if setter.isDone == true and igclicked <= 2 and menu.screen == 3 then
@@ -478,14 +562,27 @@ end
 blockcolocator.BlockDefinition()
   
 if paddle.moveable == "mouse" and menu.screen == 3 then
+  if powerups.enlarge == false then
  love.graphics.draw(paddle.sprite,mPosX-40,460,0,1,1)
-elseif paddle.moveable == "keyboard" then
+elseif powerups.enlarge == true then
+ love.graphics.draw(paddle.enlargeSprite,mPosX-50,460,0,1,1)
+end
+
+elseif paddle.moveable == "keyboard" and menu.screen == 3 then
 if pdpb == false then
+ if powerups.enlarge == false then
  love.graphics.draw(paddle.sprite,mPosX-40,460,0,1,1)
+ end
+if powerups.enlarge == true then
+ love.graphics.draw(paddle.enlargeSprite,mPosX-50,460,0,1,1)
+end
  pdpb = true 
 end
-if menu.screen == 3 and menu.screen == 3 then
+if menu.screen == 3 and powerups.enlarge == false then
 love.graphics.draw(paddle.sprite,pPosX-40,460,0,1,1)
+end
+if menu.screen == 3 and powerups.enlarge == true then
+love.graphics.draw(paddle.enlargeSprite,pPosX-50,460,0,1,1)
 end
 end
 if creatorTools.status == true then
@@ -495,13 +592,18 @@ end
  love.graphics.draw(ball.sprite,ballX,ballY,0,.45,.45,10,10)
  end
 
-
+ if powerups.exist == true then
+love.graphics.draw(powerups.sprite,pwPosX ,pwPosY,0,2,2,10,10)
+ end
+if powerups.melt == true or powerups.enlarge == true then
+    love.graphics.print("PowerUp: ".. powerups.message,10,560)
+ 
+end
 
 end
 
 -- TODO: hacer el codigo independiente de tus fps;
 -- averiguar el scrolling hacia arriba (quisas pendiente, depende direccion proyecto),
--- ver la colocacion de las graficas
 -- mas niveles. 
 -- hacer powerups (ej: laser: haz dos columnas fijas, sin gravedad, en medio de ellas, pon
 -- un cuadrado con impulso, que ignore el techo y todo menos los bloques; si colisiona con el bloque;

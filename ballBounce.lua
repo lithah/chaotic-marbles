@@ -85,6 +85,7 @@ if paddle.hitbox3:enter("ball") and MovementL == 1 then --paleta 3 lados L
         acb = 0
         sfx.paddlehit:play()
     end
+if powerups.melt == false then
 if ball.hitbox:enter("blockup") and MovementR == 1 then
             world:setGravity(speed,-speed)
         ball.hitbox:setLinearVelocity(vx,-vy)
@@ -110,7 +111,17 @@ if ball.hitbox:enter("blockdown") and MovementL == 1 then
         sfx.paddlehit:play()
         acb = acb + 1
 end
+end
+if powerups.melt == true then
+if ball.hitbox:enter("blockup") then
+        sfx.melt:play()
+end
 
+if ball.hitbox:enter("blockdown") then
+        sfx.melt:play()
+end
+end
+    
 if acb >= 2 and MovementR == 1 and bounce == 0 then
     world:setGravity(-speed,speed)
     ball.hitbox:setLinearVelocity(-vx,vy)
@@ -148,7 +159,7 @@ if acb >= 2 and MovementL == 1 and bounce == 1 then
         MovementR = 1
     acb = 0
 
-
+end
 end
 
 
@@ -158,5 +169,5 @@ sfx.paddlehit:setPitch(math.random(5,40)/10)
 
 
 end
-end
+
 return w
