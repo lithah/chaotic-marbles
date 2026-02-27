@@ -96,8 +96,5 @@ if i >=6 and i <=10 then
     end
   end
 end
-  if love.keyboard.isDown("up") then
-world:draw()
-end
 end
 return w

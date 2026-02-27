@@ -111,6 +111,7 @@ sfx.melt = love.audio.newSource('sounds/melt.wav', "static")
 sfx.expand = love.audio.newSource('sounds/expand.wav', "static")
 sfx.contract = love.audio.newSource('sounds/contract.wav', "static")
 
+
 powerups = {}
 powerups.chance = 0
 
@@ -181,14 +182,20 @@ end
 
 
 function love.update(dt) ----------------------------------------------------------------------------
-if paddle.moveable == "keyboard" and paddle.hitbox2 and menu.screen == 3 then
+
+  if paddle.moveable == "keyboard" and paddle.hitbox2 and menu.screen == 3 then
 pddtPosX,pddtPosY = paddle.hitbox2:getPosition()
 love.mouse.setPosition(pddtPosX,pddtPosY)
 end
 
 if powerups.melt == true then
 pwm = pwm - dt
+if pwm >= 2.9 then
+  sfx.melt:setPitch(math.random(5,40)/10)
+sfx.melt:play()
 end
+end
+
 if pwm <= 0 then
   pwm = 0
   powerups.melt = false
@@ -197,7 +204,7 @@ if pwm <= 0 then
 end
 
 
-if powerups.enlarge == true and pwe == 5 then
+if powerups.enlarge == true and pwe >= 9.9 then
   sfx.expand:play()
 end
 if powerups.enlarge == true then
@@ -360,9 +367,9 @@ paddle.hitbox2:destroy()
 paddle.hitbox3:destroy()
   end
 
-paddle.hitbox1 = world:newRectangleCollider(mPosX-30,410+60, 40,20)
+paddle.hitbox1 = world:newRectangleCollider(mPosX-30,410+60, 20,20)
 paddle.hitbox2 = world:newRectangleCollider(mPosX,410+60, 60,20)
-paddle.hitbox3 = world:newRectangleCollider(mPosX+30,410+60, 40,20)
+paddle.hitbox3 = world:newRectangleCollider(mPosX+30,410+60, 20,20)
 
   paddle.hitbox1:setType("kinematic")
 paddle.hitbox2:setType("kinematic")
@@ -400,10 +407,16 @@ end
 end
 if isPaused == false then
   if paddle.moveable == "mouse" then
+    if powerups.enlarge == false then
 paddle.hitbox1:setPosition(mPosX-30,410+60)
 paddle.hitbox2:setPosition(mPosX,410+60)
 paddle.hitbox3:setPosition(mPosX+30,410+60)
-
+  end
+      if powerups.enlarge == true then
+paddle.hitbox1:setPosition(mPosX-40,410+60)
+paddle.hitbox2:setPosition(mPosX,410+60)
+paddle.hitbox3:setPosition(mPosX+40,410+60)
+  end
   end
  if paddle.moveable == "keyboard" then
   if pdp == false then
@@ -412,6 +425,12 @@ paddle.hitbox2:setPosition(mPosX,410+60)
 paddle.hitbox3:setPosition(mPosX+30,410+60)
 pdp = true
   end
+        if powerups.enlarge == true then
+paddle.hitbox1:setPosition(mPosX-40,410+60)
+paddle.hitbox2:setPosition(mPosX,410+60)
+paddle.hitbox3:setPosition(mPosX+40,410+60)
+  end
+  
 if love.keyboard.isDown("a") then
 paddle.hitbox1:setLinearVelocity(-400,0)
 paddle.hitbox2:setLinearVelocity(-400,0)
@@ -597,7 +616,9 @@ end
  if ball.created == 1 then
  love.graphics.draw(ball.sprite,ballX,ballY,0,.45,.45,10,10)
  end
-
+  if love.keyboard.isDown("up") then
+world:draw()
+end
 
 end
 
