@@ -1,7 +1,8 @@
-# Chaotic Marbles
+<img width="80" height="60" alt="logoChaoticMarbles" src="https://github.com/user-attachments/assets/b154a747-5a11-4864-8bab-9405d0269a40" />
 Breakout like game made to learn love2d
 
 I am trying to understand and learn how to code in Löve; and this project shows the progress made;
+
 
 # Currently Available
 - Menu
