@@ -172,6 +172,7 @@ powerups.melt = false
 powerups.enlarge = false
 pwm = 3 -- powerup Melt's duration
 pwe = 10 -- powerup Enlarge's duration
+tbd = 1
 end
 
 
@@ -180,7 +181,6 @@ end
 
 
 function love.update(dt) ----------------------------------------------------------------------------
-print(pwe)
 if paddle.moveable == "keyboard" and paddle.hitbox2 and menu.screen == 3 then
 pddtPosX,pddtPosY = paddle.hitbox2:getPosition()
 love.mouse.setPosition(pddtPosX,pddtPosY)
@@ -249,8 +249,10 @@ music.two:play()
 music.one:play()
   end
 
+
+  
   if destroyer.created == 0 and love.keyboard.isDown("escape") then
- destroyer.hitbox = world:newRectangleCollider(10000, 10000,400,300)
+ destroyer.hitbox = world:newRectangleCollider(0, 0,800,600)
   destroyer.hitbox:setCollisionClass("destroyer")
   destroyer.hitbox:setFixedRotation(true)
 destroyer.created = 1
@@ -264,7 +266,7 @@ end
 if not love.keyboard.isDown("escape") and destroyer.created == 1 then
   destroyer.hitbox:destroy()
   destroyer.created = 0
-  destroyer.allowdisable = 1
+destroyer.allowdisable = 1
 end
 
 UI.menu(dt)
@@ -456,11 +458,9 @@ print("poggers")
   if paddle.moveable == "mouse" then
 setter.hitbox:setPosition(mPosX,460)
   end
-  if paddle.moveable == "keyboard" then
- if pdpa == false then
-  setter.hitbox:setPosition(mPosX,460)
-  pdpa = true
- end
+  if paddle.moveable == "keyboard" and pPosX then
+  setter.hitbox:setPosition(pPosX,460)
+
 end
 end
 
@@ -480,7 +480,13 @@ if border.hitboxdown:enter("ball") then
 
 
     if lives == 0 then --death script ---------------------------------------------------------------
-         menu.screen = 2
+     
+ destroyer.hitbox = world:newRectangleCollider(0, 0,800,600)
+  destroyer.hitbox:setCollisionClass("destroyer")
+  destroyer.hitbox:setFixedRotation(true)
+destroyer.created = 1
+
+      menu.screen = 2
     menu.created = 0
     blockDestroyed = 0
     score = 0
@@ -592,13 +598,6 @@ end
  love.graphics.draw(ball.sprite,ballX,ballY,0,.45,.45,10,10)
  end
 
- if powerups.exist == true then
-love.graphics.draw(powerups.sprite,pwPosX ,pwPosY,0,2,2,10,10)
- end
-if powerups.melt == true or powerups.enlarge == true then
-    love.graphics.print("PowerUp: ".. powerups.message,10,560)
- 
-end
 
 end
 

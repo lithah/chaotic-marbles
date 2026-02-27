@@ -25,6 +25,7 @@ powerups.melt = true
 powerups.message = "Melt"
 end
 if powerups.selection == 2 then -- enlarge paddle temporarilly
+
 paddle.generated = 0
 powerups.enlarge = true
 powerups.message = "Enlarge"
@@ -36,7 +37,6 @@ end
 
 if powerups.value >= 10 and powerups.exist == false then
       sfx.win:play()
-  print("powerups")
 powerups.hitbox = world:newRectangleCollider(powerups.posX, powerups.posY,20,20)
 powerups.exist = true
   powerups.hitbox:setCollisionClass("powerups")
