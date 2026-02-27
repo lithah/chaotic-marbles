@@ -1,4 +1,5 @@
-<img width="80" height="60" alt="logoChaoticMarbles" src="https://github.com/user-attachments/assets/b154a747-5a11-4864-8bab-9405d0269a40" />
+<img width="1600" height="1200" alt="pixil-frame-0(54)" src="https://github.com/user-attachments/assets/f92922d6-6b7f-4fc5-94c7-621d3dc703c5" />
+
 Breakout like game made to learn love2d
 
 I am trying to understand and learn how to code in Löve; and this project shows the progress made;
