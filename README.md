@@ -6,6 +6,7 @@ I am trying to understand and learn how to code with love2d; and this project sh
 # Currently Available
 - Menu
 - 3 Levels
+- Powerups! (Enlarge, Laser, Melt, Extra live)
 - Settings
 - SFX & Music (by Alexvander and TeknoAxe, check them out!)
 
