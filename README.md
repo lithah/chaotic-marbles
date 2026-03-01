@@ -1,5 +1,5 @@
 <img width="1600" height="800" alt="pixil-frame-0(54)" src="https://github.com/user-attachments/assets/f92922d6-6b7f-4fc5-94c7-621d3dc703c5" />
-*Breakout like game made to learn how to LÖVE <3*
+                                _Breakout like game made to learn how to LÖVE <3_
 
 I am trying to understand and learn how to code with love2d; and this project shows the progress made with it!
 
