@@ -1,18 +1,16 @@
-# Chaotic Marbles
-Breakout like game made to learn love2d
+<img width="1600" height="800" alt="pixil-frame-0(54)" src="https://github.com/user-attachments/assets/f92922d6-6b7f-4fc5-94c7-621d3dc703c5" />
+*Breakout like game made to learn how to LÖVE <3*
 
-I am trying to understand and learn how to code in Löve; and this project shows the progress made;
+I am trying to understand and learn how to code with love2d; and this project shows the progress made with it!
 
 # Currently Available
 - Menu
-- Playable game
-- Settings menu 
-- Music (by Alexvander and TeknoAxe, check them out!)
-- SFX
-  
+- 3 Levels
+- Settings
+- SFX & Music (by Alexvander and TeknoAxe, check them out!)
+
 # To do
 - More levels
-- Powerups
 - Pause menu
 - credits.txt
 - Graphic overhaul
