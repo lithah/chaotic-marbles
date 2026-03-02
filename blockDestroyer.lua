@@ -18,7 +18,7 @@ for i = 1, blockTotal do
     local existKey = "blockl" .. i .. "exist"
 
     if up and down and _G[existKey] == true then
-        if up:enter("ball") or down:enter("ball") then
+        if up:enter("ball") or down:enter("ball") or up:enter("laser") or down:enter("laser")  then
             powerups.posX, powerups.posY = up:getPosition()
             up:destroy()
             down:destroy()

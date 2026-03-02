@@ -20,9 +20,9 @@ function w.menuDraw(dt)
 
   if menu.screen == 3 then
      if powerups.exist == true then
-love.graphics.draw(powerups.sprite,pwPosX ,pwPosY,0,2,2,10,10)
+love.graphics.draw(powerups.sprite,pwPosX ,pwPosY,0,2,2,4,4)
  end
-if powerups.melt == true or powerups.enlarge == true then
+if powerups.melt == true or powerups.enlarge == true or powerups.laser == true then
    love.graphics.setColor(1,0,0,1)
     love.graphics.print("PowerUp: ".. powerups.message,10,560)
  love.graphics.setColor(1,1,1,1)

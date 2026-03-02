@@ -13,7 +13,6 @@
 function love.load()
       world = wf.newWorld(100,100, true)
     world:addCollisionClass("ball")
-    world:addCollisionClass("paddleBorder", {ignores = {"ball"}})
     world:addCollisionClass("button", {ignores = {"ball"}})
     world:addCollisionClass("setter", {ignores = {"ball"}})
     world:addCollisionClass("walltop")
@@ -24,6 +23,7 @@ function love.load()
     world:addCollisionClass("paddle")
     world:addCollisionClass("destroyer", {ignores = {"ball","paddle"}})
     world:addCollisionClass("powerups", {ignores = {"ball"}})
+    world:addCollisionClass("laser", {ignores = {"ball","paddle","powerups","setter"}})
 
 love.graphics.setDefaultFilter("nearest", "nearest") 
  
@@ -106,10 +106,11 @@ sfx.select = love.audio.newSource('sounds/select.wav', "static")
 sfx.dead = love.audio.newSource('sounds/dead.wav', "static")
 sfx.paddlehit = love.audio.newSource('sounds/paddleHit.mp3', "static")
 sfx.click = love.audio.newSource('sounds/click.wav', "static")
-sfx.win = love.audio.newSource('sounds/levelWon.wav', "static")
+sfx.win = love.audio.newSource('sounds/win.wav', "static")
 sfx.melt = love.audio.newSource('sounds/melt.wav', "static")
 sfx.expand = love.audio.newSource('sounds/expand.wav', "static")
 sfx.contract = love.audio.newSource('sounds/contract.wav', "static")
+sfx.laser = love.audio.newSource('sounds/laser.wav', "static")
 
 
 powerups = {}
@@ -163,6 +164,9 @@ ctu = .002 -- Creator tools unlock; prevents spamming of the key; a workaround u
 --game because i haven't figured another way to do it lol.
 msd = .002 -- Music and Sound Definer; prevents spamming of the key; a workaround used all round this 
 --game because i haven't figured another way to do it lol.
+lip = .002 -- Laser Is Pressed; prevents spamming of the key; a workaround used all round this 
+--game because i haven't figured another way to do it lol.
+
 mim = false --Music is muted
 powerups.value = 0
 powerups.counter = 0
@@ -171,9 +175,13 @@ powerups.selection = 0
 powerups.sprite = love.graphics.newImage('images/powerups.png')
 powerups.melt = false
 powerups.enlarge = false
-pwm = 3 -- powerup Melt's duration
-pwe = 10 -- powerup Enlarge's duration
+pwm = 3 -- powerup Melt duration
+pwe = 10 -- powerup Enlarge duration
+pwl = 5 -- powerup Laser duration
+pwluv = false
 tbd = 1
+laser = {}
+ laser.sprite = love.graphics.newImage('images/laser.png')
 end
 
 
@@ -183,10 +191,49 @@ end
 
 function love.update(dt) ----------------------------------------------------------------------------
 
-  if paddle.moveable == "keyboard" and paddle.hitbox2 and menu.screen == 3 then
-pddtPosX,pddtPosY = paddle.hitbox2:getPosition()
-love.mouse.setPosition(pddtPosX,pddtPosY)
+if laser.hitbox then
+lPosX,lPosY = laser.hitbox:getPosition()
 end
+  if paddle.moveable == "keyboard" and paddle.hitbox2 and menu.screen == 3 then
+love.mouse.setPosition(pPosX,pPosY)
+end
+
+if powerups.laser == true and pwl >= 0 then
+  pwl = pwl - dt
+
+if laser.hitbox then 
+  laser.hitbox:setLinearVelocity(0,-400)
+
+
+  if laser.hitbox:enter("blockup") or laser.hitbox:enter("blockdown") or border.hitboxup:enter("laser")or not menu.screen == 3 then
+  laser.hitbox:destroy()
+  laser.hitbox = nil
+  end
+end
+if love.keyboard.isDown("space") and lip >= 0 and not laser.hitbox then
+  lip = lip - dt
+  sfx.laser:play()
+laser.hitbox = world:newRectangleCollider(pPosX, pPosY,20,20)
+laser.hitbox:setCollisionClass("laser")
+laser.hitbox:setType("dynamic")
+laser.hitbox:setGravityScale(0)
+laser.hitbox:setFixedRotation(true)
+end
+if lip <= 0 and not love.keyboard.isDown("space")  then
+  lip = 0.002
+end
+
+end
+if pwl <= 0 then
+  powerups.laser = false
+  if laser.hitbox then
+    laser.hitbox:destroy()
+  laser.hitbox = nil 
+  end
+  pwl = 5
+end
+
+
 
 if powerups.melt == true then
 pwm = pwm - dt
@@ -224,24 +271,12 @@ end
 bufflogic.PowerUpLogic()
 
   if love.keyboard.isDown("m") and msd >= 0 and mim == true then
-  sfx.select:setVolume(0)
-sfx.dead:setVolume(0)
-sfx.paddlehit:setVolume(0)
-sfx.click:setVolume(0)
-sfx.win:setVolume(0)
-music.one:setVolume(0)
-music.two:setVolume(0)
+ love.audio.setVolume(0)
 msd = msd - dt
 mim = false
 end
  if love.keyboard.isDown("m") and msd >= 0 and mim == false then
-  sfx.select:setVolume(1)
-sfx.dead:setVolume(1)
-sfx.paddlehit:setVolume(1)
-sfx.click:setVolume(1)
-sfx.win:setVolume(1)
-music.one:setVolume(1)
-music.two:setVolume(1)
+love.audio.setVolume(1)
 msd = msd - dt
 mim = true
  end
@@ -395,7 +430,7 @@ if clicked == false and setter.isDone == false then
     setter.hitbox:setType("kinematic")
 setter.isDone = true
 end
-if ball.created == 0 and tba == 0 and igclicked == 2 then
+if ball.created == 0 and tba == 0 and igclicked == .018 then
     if clicked == true then
       sPosX, sPosY = setter.hitbox:getPosition()
     ball.hitbox = world:newCircleCollider(sPosX, sPosY, 5)
@@ -419,16 +454,21 @@ paddle.hitbox3:setPosition(mPosX+40,410+60)
   end
   end
  if paddle.moveable == "keyboard" then
+  if powerups.enlarge == false then
   if pdp == false then
   paddle.hitbox1:setPosition(mPosX-30,410+60)
 paddle.hitbox2:setPosition(mPosX,410+60)
 paddle.hitbox3:setPosition(mPosX+30,410+60)
 pdp = true
   end
+end
         if powerups.enlarge == true then
+            if pdp == false then
 paddle.hitbox1:setPosition(mPosX-40,410+60)
 paddle.hitbox2:setPosition(mPosX,410+60)
 paddle.hitbox3:setPosition(mPosX+40,410+60)
+pdp = true
+            end
   end
   
 if love.keyboard.isDown("a") then
@@ -470,9 +510,6 @@ end
 
 
 end
-    if setter.hitbox:exit("powerups") then
-print("poggers")
-  end
 
   if paddle.moveable == "mouse" then
 setter.hitbox:setPosition(mPosX,460)
@@ -557,12 +594,12 @@ vx = 150
 vy = 150
 
 
-if clicked == false and love.keyboard.isDown("space") and igclicked <= 2 then
+if clicked == false and love.keyboard.isDown("space") and igclicked <= 0 then
     clicked = true
 
 end
 if love.keyboard.isDown("space") and tba == 0 then
-    igclicked = igclicked + 1
+    igclicked = igclicked + 0.009
     
 end
 if menu.screen == 3 then
@@ -581,7 +618,7 @@ end
 function love.draw() -------------------------------------------------------------------------------
   
   UIdraw.menuDraw()   
-  if setter.isDone == true and igclicked <= 2 and menu.screen == 3 then
+  if setter.isDone == true and igclicked <= 0 and menu.screen == 3 then
 love.graphics.draw(setter.sprite,pPosX,450,0,.45,.45,15,10)
 end
 blockcolocator.BlockDefinition()
@@ -608,6 +645,9 @@ love.graphics.draw(paddle.sprite,pPosX-40,460,0,1,1)
 end
 if menu.screen == 3 and powerups.enlarge == true then
 love.graphics.draw(paddle.enlargeSprite,pPosX-50,460,0,1,1)
+end
+if menu.screen == 3 and laser.hitbox then
+love.graphics.draw(laser.sprite,lPosX,lPosY,0,3,3,4,4)
 end
 end
 if creatorTools.status == true then
