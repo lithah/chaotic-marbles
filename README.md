@@ -7,6 +7,7 @@ I am trying to understand and learn how to code with love2d; and this project sh
 
 ## Currently Available
 - Menu
+- Level Creator! (beta functionality; but works for the task)
 - 3 Levels
 - Powerups! (Enlarge, Laser, Melt, Extra live)
 - Settings
