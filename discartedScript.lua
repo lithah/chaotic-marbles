@@ -8,7 +8,7 @@ buttonVar:setType("static") -- averigua como hacer esto funciona!!!!
 
 
 
-  if clicked == true and lvlDetect == 1 then
+  if clicked == true and level.detect == 1 then
         if ball.hitbox:enter("blockup") or ball.hitbox:enter("blockdown") then
             
 

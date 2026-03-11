@@ -41,22 +41,74 @@ if love.mouse.isDown(1) and menu.screen == 1 and mPosX >= 20 and mPosX <=60 and 
 love.event.quit()
 end
 
-if levelUnlocked >= 1 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 80 and mPosX <=190 and mPosY >=30 and mPosY <= 90  then
+if level.unlocked >= 1 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 80 and mPosX <=190 and mPosY >=30 and mPosY <= 90  then
   menu.screen = 3
 gen.levelGen(1)
+level.latest = 1
 sfx.click:play()
 
 end
-if levelUnlocked >= 2 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 210 and mPosX <=320 and mPosY >=30 and mPosY <= 90 then
+if level.unlocked >= 2 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 210 and mPosX <=320 and mPosY >=30 and mPosY <= 90 then
   menu.screen = 3
 gen.levelGen(2)
+level.latest = 2
 sfx.click:play()
 end
-if levelUnlocked >= 3 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 340 and mPosX <=440 and mPosY >=30 and mPosY <= 90 then
+if level.unlocked >= 3 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 340 and mPosX <=440 and mPosY >=30 and mPosY <= 90 then
   menu.screen = 3
 gen.levelGen(3)
+level.latest = 3
 sfx.click:play()
 end
+
+if level.unlocked >= 4 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 470 and mPosX <=560 and mPosY >=30 and mPosY <= 90 then
+  menu.screen = 3
+gen.levelGen(4)
+level.latest = 4
+sfx.click:play()
+end
+
+if level.unlocked >= 5 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 600 and mPosX <=680 and mPosY >=30 and mPosY <= 90 then
+  menu.screen = 3
+gen.levelGen(5)
+level.latest = 5
+sfx.click:play()
+end
+
+if level.unlocked >= 6 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 80 and mPosX <=190 and mPosY >=110 and mPosY <= 180  then
+  menu.screen = 3
+gen.levelGen(6)
+level.latest = 6
+sfx.click:play()
+
+end
+if level.unlocked >= 7 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 210 and mPosX <=320 and mPosY >=110 and mPosY <= 180 then
+  menu.screen = 3
+gen.levelGen(7)
+level.latest = 7
+sfx.click:play()
+end
+if level.unlocked >= 8 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 340 and mPosX <=440 and mPosY >=110 and mPosY <= 180 then
+  menu.screen = 3
+gen.levelGen(8)
+level.latest = 8
+sfx.click:play()
+end
+
+if level.unlocked >= 9 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 470 and mPosX <=560 and mPosY >=110 and mPosY <= 180 then
+  menu.screen = 3
+gen.levelGen(9)
+level.latest = 9
+sfx.click:play()
+end
+
+if level.unlocked >= 10 and love.mouse.isDown(1) and menu.screen == 2 and mPosX >= 600 and mPosX <=680 and mPosY >=110 and mPosY <= 180 then
+  menu.screen = 3
+gen.levelGen(10)
+level.latest = 10
+sfx.click:play()
+end
+
 if destroyer.allowdisable == 1 then -- escape key script ---------------------------------------------
     menu.screen = 2
     menu.created = 0
@@ -75,23 +127,54 @@ if destroyer.allowdisable == 1 then -- escape key script -----------------------
 end
 
 if creatorTools.status == true and menu.screen == 3 then -- creator tools ----------------------------------
-lvlDetect = 1000
-level = 1000
+level.detect = 1000
+
+lvl = 1000
 love.graphics.draw(block.sprite,mPosX, mPosY,0,1,1)
-if love.keyboard.isDown("lshift") and creatorTools.regularizer >= 0 then -- levelbuilding script ------------------------------
- creatorTools.regularizer = creatorTools.regularizer - dt
-  block.hitboxup = world:newRectangleCollider(mPosX, mPosY-5,60,10)
-  block.hitboxup:setCollisionClass("blockup")
-block.hitboxup:setType("static")
-  block.hitboxdown = world:newRectangleCollider(mPosX, mPosY+5,60,10)
-  block.hitboxdown:setCollisionClass("blockdown")
-  block.hitboxdown:setType("static")
-  print ("PosX: ".. mPosX .. " PosY: ".. mPosY)
-  end
+
+end
+
+if love.keyboard.isDown("lshift") and creatorTools.regularizer >= 0 then -- level building script, originally human made, but was remade by AI (gemini); i hate doing this; but it was requiring 900+ lines of code to work
+    local colWidth = 60
+    local rowHeight = 25
+    local startX = 180
+    local startY = 140
+
+    for j = 0, 6 do
+        for i = 0, 6 do
+            local x = startX + (j * colWidth)
+            local y = startY + (i * rowHeight)
+
+            if mPosX >= x and mPosX < x + colWidth and mPosY >= y and mPosY < y + rowHeight then
+                creatorTools.blockID = creatorTools.blockID + 1
+                creatorTools.regularizer = creatorTools.regularizer - dt
+                
+                block.hitboxupn[creatorTools.blockID] = world:newRectangleCollider(x, y - 5, colWidth, 10)
+                block.hitboxupn[creatorTools.blockID]:setCollisionClass("blockup")
+                block.hitboxupn[creatorTools.blockID]:setType("static")
+                
+                block.hitboxdownn[creatorTools.blockID] = world:newRectangleCollider(x, y + 5, colWidth, 10)
+                block.hitboxdownn[creatorTools.blockID]:setCollisionClass("blockdown")
+                block.hitboxdownn[creatorTools.blockID]:setType("static")
+
+                
+                
+                print("block.hitboxupn" .. creatorTools.blockID .. " = world:newRectangleCollider(" .. x .. ", " .. y .. "-5, 60, 10)")
+                print("block.hitboxupn" .. creatorTools.blockID .. ":setCollisionClass('blockup')")
+                print("block.hitboxupn" .. creatorTools.blockID .. ":setType('static')")
+                print("block.hitboxdownn" .. creatorTools.blockID .. " = world:newRectangleCollider(" .. x .. ", " .. y .. "+5, 60, 10)")
+                print("block.hitboxdownn" .. creatorTools.blockID .. ":setCollisionClass('blockdown')")
+                print("block.hitboxdownn" .. creatorTools.blockID .. ":setType('static')")
+                
+                break 
+            end
+        end
+    end
+end
   if creatorTools.regularizer <= 0 and not love.keyboard.isDown("lshift") then
     creatorTools.regularizer = 0.002
-end
-end
+  end
+
 
 if menu.screen == 1 then
  ttl = ttl - dt

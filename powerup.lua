@@ -19,6 +19,8 @@ end
     powerups.hitbox:destroy()
     powerups.exist = false
      powerups.value = 0
+
+
 if powerups.selection == 1 then -- penetrate throughout multiple blocks without rebound
 powerups.melt = true
 powerups.message = "Melt"
@@ -32,6 +34,7 @@ end
 if powerups.selection == 3 then -- spawn laser that destroys blocks
 
 powerups.laser = true
+
 powerups.message = "Laser"
 end
 if powerups.selection == 4 then -- gifts the player one extra live

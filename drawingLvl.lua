@@ -10,7 +10,7 @@ if creatorTools.status == true then
    world:draw()
 end
 
- if lvlDetect == 1 and menu.screen == 3 then
+ if level.detect == 1 and menu.screen == 3 then
     for i = 1, blockTotal do
     local existKey = "blockl" .. i .. "exist"
  if _G[existKey] == true then
@@ -38,7 +38,7 @@ end
 end
 end
 end
- if lvlDetect == 2 and menu.screen == 3 then
+ if level.detect == 2 and menu.screen == 3 then
     for i = 1, blockTotal do
     local existKey = "blockl" .. i .. "exist"
  if _G[existKey] == true then
@@ -64,7 +64,7 @@ end
 end
 end
 
-if lvlDetect == 3 and menu.screen == 3 then
+if level.detect == 3 and menu.screen == 3 then
     for i = 1, blockTotal do
     local existKey = "blockl" .. i .. "exist"
  if _G[existKey] == true then

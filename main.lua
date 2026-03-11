@@ -65,6 +65,7 @@ border.hitboxup = world:newRectangleCollider(0,-10,800,20)
  border.hitboxright:setType("static")
    border.hitboxright:setCollisionClass("wallsideB")
 
+
    text = {}
 text.default = love.graphics.newFont("fonts/PixelifySans.ttf",30)
 love.graphics.setFont(text.default) 
@@ -85,6 +86,8 @@ setter.isDone = false
 setter.sprite = ball.sprite
 
 block = {}
+   block.hitboxupn = {}
+block.hitboxdownn = {} 
 clicked = false
 
 bg = {}
@@ -97,8 +100,6 @@ block.created = false
 
 paddle = {}
 paddle.generated = 0
- paddle.sprite = love.graphics.newImage('images/paddle.png')
- paddle.enlargeSprite = love.graphics.newImage('images/enlarge.png')
 
 
 sfx = {}
@@ -148,18 +149,30 @@ button.backDone = 0
 button.back = love.graphics.newImage('images/backbutton.png')
 button.play = love.graphics.newImage('images/playbutton.png')
 
+sprites = {}
+sprites.settings = love.graphics.newImage('images/settings.png')
+sprites.powerups = love.graphics.newImage('images/powerups.png')
+sprites.laser = love.graphics.newImage('images/laser.png')
+sprites.paddle = love.graphics.newImage('images/paddle.png')
+sprites.paddleEnlarge = love.graphics.newImage('images/enlarge.png')
+sprites.unlockedButton = love.graphics.newImage('images/unlockedButton.png')
+
+level = {}
+ level.detect = 0
+level.unlocked = 1
+level.latest = 1
+
 settings = {}
-settings.sprite = love.graphics.newImage('images/settings.png')
 pmstatus = 0
 pmtimer = .01
 blockEscape = 0
 destroyer = {}
 destroyer.created = 0
-levelUnlocked = 1
 creatorTools = {}
 creatorTools.status = false
 creatorTools.msg = "false"
-creatorTools.regularizer = 0.02
+creatorTools.regularizer = 0.002
+creatorTools.blockID = 0
 ctu = .002 -- Creator tools unlock; prevents spamming of the key; a workaround used all round this 
 --game because i haven't figured another way to do it lol.
 msd = .002 -- Music and Sound Definer; prevents spamming of the key; a workaround used all round this 
@@ -172,7 +185,6 @@ powerups.value = 0
 powerups.counter = 0
 powerups.exist = false
 powerups.selection = 0
-powerups.sprite = love.graphics.newImage('images/powerups.png')
 powerups.melt = false
 powerups.enlarge = false
 pwm = 3 -- powerup Melt duration
@@ -181,7 +193,9 @@ pwl = 5 -- powerup Laser duration
 pwluv = false
 tbd = 1
 laser = {}
- laser.sprite = love.graphics.newImage('images/laser.png')
+loadGame()
+autosave = 20
+sdt = 5 --save deletion timer
 end
 
 
@@ -190,7 +204,6 @@ end
 
 
 function love.update(dt) ----------------------------------------------------------------------------
-
 if laser.hitbox then
 lPosX,lPosY = laser.hitbox:getPosition()
 end
@@ -218,6 +231,7 @@ laser.hitbox:setCollisionClass("laser")
 laser.hitbox:setType("dynamic")
 laser.hitbox:setGravityScale(0)
 laser.hitbox:setFixedRotation(true)
+laser.draw = 1
 end
 if lip <= 0 and not love.keyboard.isDown("space")  then
   lip = 0.002
@@ -232,7 +246,9 @@ if pwl <= 0 then
   end
   pwl = 5
 end
-
+if not laser.hitbox and powerups.laser == true then
+    laser.draw = 0
+end
 
 
 if powerups.melt == true then
@@ -312,8 +328,20 @@ destroyer.allowdisable = 1
 end
 
 UI.menu(dt)
-if menu.screen == 4 then
+if menu.screen == 4 then -- config -----------------------------------------------------------------
   
+if love.keyboard.isDown("backspace") then
+sdt = sdt - dt 
+end
+
+if not love.keyboard.isDown("backspace") then
+sdt = 5
+end
+
+if sdt <= 0 then
+os.remove("save-values")
+end
+
 if love.keyboard.isDown("lshift") and ctu == 0.02 and creatorTools.status == false then
 creatorTools.status = true
 creatorTools.msg = "true"
@@ -494,14 +522,14 @@ end
 
 paddle.posX, paddle.posY = paddle.hitbox2:getPosition()
 
-if paddle.posX <= 0 and not love.keyboard.isDown("d") then
+if paddle.posX <= 10 and not love.keyboard.isDown("d") then
   paddle.hitbox1:setLinearVelocity(0,0)
   paddle.hitbox2:setLinearVelocity(0,0)
 paddle.hitbox3:setLinearVelocity(0,0)
 setter.hitbox:setLinearVelocity(0,0)
 end
 
-if paddle.posX >= 800 and not love.keyboard.isDown("a") then
+if paddle.posX >= 790 and not love.keyboard.isDown("a") then
   paddle.hitbox1:setLinearVelocity(0,0)
   paddle.hitbox2:setLinearVelocity(0,0)
 paddle.hitbox3:setLinearVelocity(0,0)
@@ -558,7 +586,7 @@ destroyer.created = 1
   lives = 3
     end
 
-if blockDestroyed == blockTotal and lvlDetect == 1 then
+if blockDestroyed == blockTotal and level.latest == level.unlocked then
   ball.hitbox:destroy()
   blockDestroyed = 0
   sfx.win:play()
@@ -566,25 +594,15 @@ if blockDestroyed == blockTotal and lvlDetect == 1 then
   igclicked = 0
   ball.created = 0
   clicked = false
-  lvlDetect = 2
-  gen.levelGen(2)
+  level.detect = level.detect + 1
+  gen.levelGen(level.detect+1)
   BlockColor()
-  levelUnlocked = levelUnlocked + 1
+  level.unlocked = level.unlocked + 1
+  level.latest = level.latest + 1
+
 end
 
-if blockDestroyed == blockTotal and lvlDetect == 2 then
-  ball.hitbox:destroy()
-  blockDestroyed = 0
-  sfx.win:play()
-  tba = 1.3
-  ball.created = 0
-  clicked = false
-  igclicked = 0
-  lvlDetect = 3
-  gen.levelGen(3)
-  BlockColor()
-    levelUnlocked = levelUnlocked + 1
-end
+
 
 if ball.created == 1 then
 ballX,ballY = ball.hitbox:getPosition()
@@ -607,13 +625,47 @@ pPosX,pPosY = paddle.hitbox2:getPosition()
     msgbg = msgbg - dt
 end
 
-
+end
+autosave = autosave - dt
+if autosave <= 0 then
+  saveGame()
+  print ("Saved!")
+  autosave = 20
+end
 world:update(dt)
-
 end
 
+function saveGame()
+  local f= io.open("save-values","w")
+if f then
+  f:write(tostring(level.unlocked))
+   f:write("\n")
+ f:write(tostring(score))
+    f:write("\n")
+     f:write(tostring(lives))
+    f:write("\n")
+       f:write(tostring(paddle.moveable))
+  f:close()
+else
+  error("Failed to open save file :c")
+end
+end
+function loadGame()
+  local f= io.open("save-values","r")
+if f then
+local levelread = f:read("*l")
+local scoreread = f:read("*l")
+local liveread = f:read("*l")
+local paddleconfig = f:read("*l")
+level.unlocked = (tonumber(levelread))
+score = (tonumber(scoreread))
+lives = (tonumber(liveread))
+paddle.moveable = (paddleconfig)
 
-
+  f:close()
+else
+  saveGame()
+end
 end
 function love.draw() -------------------------------------------------------------------------------
   
@@ -625,30 +677,31 @@ blockcolocator.BlockDefinition()
   
 if paddle.moveable == "mouse" and menu.screen == 3 then
   if powerups.enlarge == false then
- love.graphics.draw(paddle.sprite,mPosX-40,460,0,1,1)
+ love.graphics.draw(sprites.paddle,mPosX-40,460,0,1,1)
 elseif powerups.enlarge == true then
- love.graphics.draw(paddle.enlargeSprite,mPosX-50,460,0,1,1)
+ love.graphics.draw(sprites.paddleEnlarge,mPosX-50,460,0,1,1)
 end
 
 elseif paddle.moveable == "keyboard" and menu.screen == 3 then
 if pdpb == false then
  if powerups.enlarge == false then
- love.graphics.draw(paddle.sprite,mPosX-40,460,0,1,1)
+ love.graphics.draw(sprites.paddle,mPosX-40,460,0,1,1)
  end
 if powerups.enlarge == true then
- love.graphics.draw(paddle.enlargeSprite,mPosX-50,460,0,1,1)
+ love.graphics.draw(sprites.paddleEnlarge,mPosX-50,460,0,1,1)
 end
  pdpb = true 
 end
 if menu.screen == 3 and powerups.enlarge == false then
-love.graphics.draw(paddle.sprite,pPosX-40,460,0,1,1)
+love.graphics.draw(sprites.paddle,pPosX-40,460,0,1,1)
 end
 if menu.screen == 3 and powerups.enlarge == true then
-love.graphics.draw(paddle.enlargeSprite,pPosX-50,460,0,1,1)
+love.graphics.draw(sprites.paddleEnlarge,pPosX-50,460,0,1,1)
 end
-if menu.screen == 3 and laser.hitbox then
-love.graphics.draw(laser.sprite,lPosX,lPosY,0,3,3,4,4)
+if powerups.laser == true and laser.draw == 1 then
+love.graphics.draw(sprites.laser,lPosX,lPosY,0,3,3,4,4)
 end
+
 end
 if creatorTools.status == true then
 love.graphics.draw(block.sprite,mPosX, mPosY,0,1,1)
@@ -656,15 +709,29 @@ end
  if ball.created == 1 then
  love.graphics.draw(ball.sprite,ballX,ballY,0,.45,.45,10,10)
  end
+      if powerups.exist == true and menu.screen == 3 then
+love.graphics.draw(sprites.powerups,pwPosX ,pwPosY,0,2,2,4,4)
+ end
   if love.keyboard.isDown("up") then
 world:draw()
 end
+if level.detect then
+if level.detect >= 4 and menu.screen == 3 then
+world:draw()
+end
+end
+
 
 end
 
 -- TODO: hacer el codigo independiente de tus fps;
+
 -- averiguar el scrolling hacia arriba (quisas pendiente, depende direccion proyecto),
+
 -- mas niveles. 
--- hacer powerups (ej: laser: haz dos columnas fijas, sin gravedad, en medio de ellas, pon
--- un cuadrado con impulso, que ignore el techo y todo menos los bloques; si colisiona con el bloque;
--- lo destruyes)
+
+-- debuffs
+
+-- MOBILE SUPPORT
+
+-- overhaul grafico

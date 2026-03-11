@@ -13,15 +13,12 @@ function w.menuDraw(dt)
     if menu.screen == 1 then
  love.graphics.draw(menu.sprite1,0,0,0,10,10)
  love.graphics.draw(button.play,370,450,0,3,3)
-  love.graphics.draw(settings.sprite,740,540,0,1,1) 
+  love.graphics.draw(sprites.settings,740,540,0,1,1) 
   love.graphics.draw(button.back,20,540,0,1,1) 
   end
   
 
   if menu.screen == 3 then
-     if powerups.exist == true then
-love.graphics.draw(powerups.sprite,pwPosX ,pwPosY,0,2,2,4,4)
- end
 if powerups.melt == true or powerups.enlarge == true or powerups.laser == true then
    love.graphics.setColor(1,0,0,1)
     love.graphics.print("PowerUp: ".. powerups.message,10,560)
@@ -56,6 +53,14 @@ end
    love.graphics.print("'mouse' allows control of the paddle with mouse cursor",450,190,0,.4,.4)
    love.graphics.print("Press 'lshift' to enter level creator mode",450,210,0,.5,.5)
    love.graphics.print("Press 'm' to mute",450,250,0,.5,.5)
+      love.graphics.setColor(1,1,0,1)
+love.graphics.print("Press 'del' to delete you save",440,520,0,0.8,0.8)
+   love.graphics.print("THIS CANNOT BE UNDONE, ARE YOU SURE?",480,550,0,.5,.5)
+   if sdt >= 0 then
+     love.graphics.print("(keep holding for "..sdt.." seconds)",520,570,0,.5,.5)
+   elseif sdt <= 0 then
+love.graphics.print  ("done.",500,560,0,.5,.5)
+   end
  love.graphics.setColor(0,1,0,1)
 love.graphics.print("Control Mode: "..paddle.moveable,20,160)
 love.graphics.print("Creator Tools: "..creatorTools.msg,20,200)
@@ -69,7 +74,34 @@ love.graphics.setColor(1,1,1,1)
   destroyer.allowdisable = 0
    love.graphics.draw(menu.sprite2,0,0,0,10,10)
   love.graphics.draw(button.back,740,480,0,1,1) 
-    love.graphics.draw(settings.sprite,740,540,0,1,1) 
+    love.graphics.draw(sprites.settings,740,540,0,1,1) 
+
+for i = 1, level.unlocked do
+      menu.unlockedX = {115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,}
+    menu.unlockedY = {40,120,200,280,360,440,520}
+if i >=1 and i <=5 then
+ love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[1],0,10,10,3.5,1)
+    end
+if i >=6 and i <=10 then
+love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[2],0,10,10,3.5,1)
+    end
+    if i >=11 and i <=15 then
+love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[3],0,10,10,3.5,1)
+    end    
+    if i >=16 and i <=20 then
+love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[4],0,10,10,3.5,1)
+    end
+        if i >=21 and i <=25 then
+love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[5],0,10,10,3.5,1)
+    end
+            if i >=26 and i <=30 then
+love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[6],0,10,10,3.5,1)
+    end
+                if i >=31 and i <=35 then
+love.graphics.draw(sprites.unlockedButton,menu.unlockedX[i],menu.unlockedY[7],0,10,10,3.5,1)
+    end
+end
+
   for i = 1, stage.ammount do
     stage.posX = {115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,115,245,375,505,635,}
     stage.posY = {40,120,200,280,360,440,520}
@@ -95,6 +127,8 @@ if i >=6 and i <=10 then
     stage.numerator = love.graphics.print("-"..i.."-",stage.posX[i],stage.posY[7])
     end
   end
+  
 end
+
 end
 return w
